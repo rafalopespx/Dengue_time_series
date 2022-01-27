@@ -1,0 +1,238 @@
+---
+  title: "KrigR and ERA5 (Land) database"
+author: "Rafael Lopes"
+institute: "IFT, Unesp"
+date: " `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+  self-contained: true
+lib_dir: libs
+css: xaringan-themer.css
+nature:
+  highlightStyle: github
+highlightLines: true
+countIncrementalSlides: false
+ratio: '16:9'
+---
+  layout: true
+
+```{r xaringan-themer, include = FALSE}
+options(htmltools.dir.version = FALSE)
+library(xaringanthemer)
+library(xaringanExtra)
+library(knitr)
+duo_accent(
+  primary_color = "#A70000",
+  secondary_color = "#ff0000",
+  white_color = "white",
+  header_font_google = google_font("Roboto Condensed"),
+  text_font_google   = google_font("Roboto Condensed", "300", "300i"),
+  code_font_google   = google_font("Ubuntu Mono"), text_font_size = "30px")
+```
+
+```{r xaringan-extra, echo = FALSE}
+use_extra_styles(
+  hover_code_line = TRUE, 
+  mute_unhighlighted_code = TRUE)
+```
+background-image: img/logo_IFT.png
+background-position: top right
+background-size: 110px 120px
+
+---
+  class: left
+
+## Find me at
+
+.left-column[
+  
+  ##### email: rafael.lp.silva@unesp.br
+  ##### Twitter: [@rafalpx](twitter.com/rafalpx)
+  ##### github: [rafalopespx](github.io/rafalopespx)
+  
+]
+
+.pull-right[
+  
+  ![profile](img/profile_pick.jpeg)
+  
+]
+
+---
+  
+  ## ERA5 and ERA5 Land
+  
+  - The latest climate reanalysis produced by **ECMWF**, providing hourly data on many atmospheric, land-surface and sea-state parameters together with estimates of uncertainty.
+- Reanalysis Products are synthetic data produced by given to a global circulation and meteorological models the point meteorological data from automatic weather stations records.
+- Acessible in Climate Data Store of **ECMWF**, [CDS](https://cds.climate.copernicus.eu/#!/home)
+                                                        
+                                                        ---
+                                                        
+                                                        ## ERA5 
+                                                        
+                                                        ERA5<sup>1</sup> specification:
+                                                        
+                                                        - Spatial coverage: Global
+                                                      - Spatial Grid Resolution: 0.25° x 0.25° (atmosphere), 0.5° x 0.5° (ocean waves), 34 km
+                                                      - Temporal coverage:	1979 to present
+                                                      - Temporal resolution:	Hourly
+                                                      - Update frequency:	Daily, until 5 days behind real time
+                                                      
+                                                      .footnote[
+                                                        [1] [Documentation](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=overview)
+                                                      ]
+                                                      
+                                                      ---
+                                                        
+                                                        ## ERA5 (Land)
+                                                        
+                                                        ERA5-Land<sup>1</sup> is a replay of the land component of the ERA5 climate reanalysis, but with a series of improvements making it more accurate for all types of land applications:
+                                                        
+                                                        - Spatial coverage: Global
+                                                      - Spatial Grid Resolution: 0.1° x 0.1°; Native resolution is 9 km
+                                                      - Temporal coverage: January 1981 to present
+                                                      - Temporal resolution:	Hourly
+                                                      - Update frequency:	Monthly with a delay of about three months relatively to actual date
+                                                      
+                                                      .footnote[ 
+                                                        [1] [Documentation](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=overview)
+                                                      ]
+                                                      ---
+                                                        
+                                                        ![era5](img/ERA5.png)
+                                                      
+                                                      ---
+                                                        
+                                                        ![era5-land](img/ERA5Land.png)
+                                                      
+                                                      ---
+                                                        
+                                                        ## KrigR
+                                                        
+                                                        An R Package for downloading, preprocessing, and statistical downscaling of the ECMWF ERA5 family.
+                                                      
+                                                      ```{r krigR, message=FALSE, warning=FALSE, echo=TRUE, eval=FALSE}
+                                                      devtools::install_github("https://github.com/ErikKusch/KrigR") #<<
+                                                      ```
+                                                      
+                                                      [Tutorial](https://www.erikkusch.com/post/krigr-mats/krigrworkshop/)
+                                                      
+                                                      ---
+                                                        
+                                                        ## KrigR
+                                                        
+                                                        .left-column[
+                                                          
+                                                          KrigR contains functions for:
+                                                            
+                                                        ]
+                                                      
+                                                      .right.column[
+                                                        
+                                                        -  Downloading Era5(Land) data directly from within R
+                                                        -  Downloading UERRA data directly from within R
+                                                        -  Downloading USGS GMTED 2010 elevation data
+                                                        -  Kriging spatial input to desired output using user-specified covariates
+                                                        -  Downloading and Kriging Era5(Land) data using USGS GMTED 2010 elevation as covariate data in one function call
+                                                        
+                                                      ]    
+                                                      
+                                                      
+                                                      ---
+                                                        
+                                                        ## KrigR ERA5
+                                                        
+                                                        .pull-left[
+                                                          
+                                                          ```{r krig-sp, eval=FALSE, echo=TRUE}
+                                                          library(KrigR)
+                                                          sp_sf_muni_raw<-download_ERA(
+                                                            Variable = '2m_temperature', #<<
+                                                            DataSet = 'era5-land', #<<
+                                                            DateStart = '1989-10-12', #<<
+                                                            DateStop = '1989-10-14', #<<
+                                                            TResolution = 'day', #<<
+                                                            TStep = 1,
+                                                            Extent = sp_sf_muni_extent,
+                                                            Dir = Dir.StateShp,
+                                                            API_User = API_user,
+                                                            API_Key = API_key, verbose = FALSE)
+                                                          sp_muni_raw_plt<-Plot_Raw(
+                                                            sp_sf_muni_raw, 
+                                                            Shp = sp_sf_muni, 
+                                                            Dates = c("1989-10-12", "1989-10-13", "1989-10-14"))
+                                                          ```
+                                                        ]
+                                                      
+                                                      .pull-right[
+                                                        
+                                                        ![krigsp](img/era5-sp-1.png)
+                                                      ]
+                                                      
+                                                      ---
+                                                        
+                                                        ## KrigR DEM
+                                                        
+                                                        .pull-left[
+                                                          
+                                                          ```{r krig-sp-dem, eval=FALSE, echo=TRUE}
+                                                          Covs_ls_sp_muni <- download_DEM(
+                                                            Train_ras = sp_sf_muni_raw,
+                                                            Target_res = .02,
+                                                            Shape = sp_sf_muni,
+                                                            Dir = Dir.StateShp,
+                                                            Keep_Temporary = TRUE)
+                                                          sp_muni_covs_plt<-Plot_Covs(
+                                                            Covs_ls_sp_muni, 
+                                                            Shp = sp_sf_muni)
+                                                          ```
+                                                        ]
+                                                      
+                                                      .pull-right[
+                                                        
+                                                        ![krigsp](img/cov-sp-1.png)
+                                                      ]
+                                                      
+                                                      ---
+                                                        
+                                                        ## Kriging
+                                                        
+                                                        .pull-left[
+                                                          
+                                                          ```{r kriging-sp, eval=FALSE, echo=TRUE}
+                                                          sp_muni_Krig <- krigR(
+                                                            Data = sp_sf_muni_raw, # what to krig
+                                                            Covariates_coarse = Covs_ls_sp_muni[[1]], # covariates at training resolution
+                                                            Covariates_fine = Covs_ls_sp_muni[[2]], # covariates at target resolution
+                                                            Keep_Temporary = FALSE, # delete temporary krigs of layers
+                                                            Cores = 1, # only run this on 1 core
+                                                            FileName = "sp_muni_Shape.nc", # save the finished file as this
+                                                            Dir = Dir.StateShp, # where to save the output
+                                                            verbose = FALSE # Stop Talking
+                                                          )
+                                                          sp_muni_krig_plt<-Plot_Krigs(
+                                                            sp_muni_Krig, 
+                                                            Shp = sp_sf_muni, 
+                                                            Dates = c("1989-10-12", "1989-10-13", "1989-10-14"))
+                                                          ```
+                                                        ]
+                                                      
+                                                      .pull-right[
+                                                        
+                                                        ![krigsp](img/krig-sp-1.png)
+                                                      ]
+                                                      
+                                                      ---
+                                                        class: center
+                                                      
+                                                      # Thanks!
+                                                      
+                                                      ## References:
+                                                      
+                                                      - [Climate Data Store](https://cds.climate.copernicus.eu/#!/home)
+                                                                               
+                                                                               - [Tutorial](https://www.erikkusch.com/post/krigr-mats/krigrworkshop/)
+                                                                             
+                                                                             - [KrigR over Brazil](https://rpubs.com/rafalopespx/krigr_br)
+                                                                             
+                                                                             - [1st Climate Change and Health Webinar](https://www.youtube.com/watch?v=sUbDiT0YsII)
