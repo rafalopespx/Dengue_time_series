@@ -13,4 +13,6 @@ Scripts Documentation
     │
     └── README.md
 
-# 
+## Observations
+
+The `01_dbf_organizer.R` code reads .dbc and .dbf files, but those files are not in the repository due to being greater than the maximum size of a file to upload on github. We can implement a solution by reading them from a private link on a drive, not yet implemented.
