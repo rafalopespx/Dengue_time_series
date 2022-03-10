@@ -1,8 +1,6 @@
 Dengue Time Series
 ================
 
-# Dengue Time Series
-
 This is a repository to a more clean version of Dengue cases in Brazil,
 by individual case data. Here we have cases taken from *SINAN-Dengue*,
 the obligatory notitication system of Dengue disease in Brazil. The data
