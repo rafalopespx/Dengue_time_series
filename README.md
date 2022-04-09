@@ -23,7 +23,7 @@ Documentation for
 
 ## DataSUS and MicroDataSUS
 
-Data were get from the r package MicroDataSUS
+Data were get from the R package MicroDataSUS
 [here](https://github.com/rfsaldanha/microdatasus) and DataSUS ftp
 [here](ftp://ftp.datasus.gov.br/)
 
